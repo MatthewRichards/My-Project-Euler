@@ -10,7 +10,7 @@ namespace Euler
     static void Main(string[] args)
     {
       DateTime startTime = DateTime.Now;
-      var answer = new Problem12().GetAnswer();
+      var answer = new Problem23().GetAnswer();
       DateTime endTime = DateTime.Now;
 
       Console.Out.WriteLine("Solved in " + (endTime - startTime).Milliseconds + "ms");
