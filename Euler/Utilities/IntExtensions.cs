@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Euler.Utilities
 {
@@ -96,9 +97,14 @@ namespace Euler.Utilities
         if (number % test == 0)
         {
           yield return test;
-          yield return (number/test);
+          yield return (number / test);
         }
       }
+    }
+
+    public static IEnumerable<long> PrimeFactors(this long number)
+    {
+      return Sequences.Primes().TakeWhile(prime => prime <= number).Where(prime => number%prime == 0);
     }
   }
 }
