@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Euler
+namespace Euler.Utilities
 {
   public class Sequences
   {

@@ -36,27 +36,22 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FunctionExtensions.cs" />
-    <Compile Include="IntExtensions.cs" />
-    <Compile Include="Problem12.cs" />
-    <Compile Include="Problem15.cs" />
-    <Compile Include="Problem16.cs" />
-    <Compile Include="Problem17.cs" />
-    <Compile Include="Problem18And67.cs" />
-    <Compile Include="Problem22.cs" />
-    <Compile Include="Problem23.cs" />
-    <Compile Include="Problem81To83.cs" />
-    <Compile Include="Problems1To10.cs" />
+    <Compile Include="Utilities\FunctionExtensions.cs" />
+    <Compile Include="Utilities\IntExtensions.cs" />
+    <Compile Include="Problems\Problem12.cs" />
+    <Compile Include="Problems\Problem15.cs" />
+    <Compile Include="Problems\Problem16.cs" />
+    <Compile Include="Problems\Problem17.cs" />
+    <Compile Include="Problems\Problem18And67.cs" />
+    <Compile Include="Problems\Problem22.cs" />
+    <Compile Include="Problems\Problem23.cs" />
+    <Compile Include="Problems\Problem81To83.cs" />
+    <Compile Include="Problems\Problems1To10.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sequences.cs" />
+    <Compile Include="Utilities\Sequences.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

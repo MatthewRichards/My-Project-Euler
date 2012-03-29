@@ -1,6 +1,7 @@
 ﻿using System;
+using Euler.Utilities;
 
-namespace Euler
+namespace Euler.Problems
 {
   public class Problem15
   {

@@ -1,7 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
+using Euler.Utilities;
 
-namespace Euler
+namespace Euler.Problems
 {
   public class Problem17
   {
