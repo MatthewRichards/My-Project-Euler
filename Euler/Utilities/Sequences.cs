@@ -10,7 +10,14 @@ namespace Euler.Utilities
 
     public static IEnumerable<long> Range(long start, long end)
     {
-      for (long number = start; number <= end; number++)
+      return Range(start, end, 1);
+    }
+
+    public static IEnumerable<long> Range(long start, long end, int step)
+    {
+      int direction = start > end ? -step : step;
+
+      for (long number = start; number != end; number += direction)
       {
         yield return number;
       }

@@ -11,70 +11,30 @@ namespace Euler.Problems
     public long GetAnswer()
     {
       // It's easier to work out how many coprimes there aren't, than how many there are
-      // So count all the non-coprimes of each number
+      // So count all the non-coprimes of each number instead
       var inversePhi = new long[10000001];
       var allPrimes = Sequences.Primes().TakeWhile(prime => prime < inversePhi.Length).ToList();
-
       AddMultiplesOfPrimes(allPrimes, 1, 1, true, inversePhi);
 
-      // Work out how many many non-coprimes there are
-      // The above double-counts any multiples of two primes, so correct for them
-      // But then that under-counts multiples of three primes, by subtracting them twice, so add these back on
-      // But then that double-counts multiples of four primes... etc
-      // This can't go on to more than multiples of 8 primes as 2x3x...x19x23 (first 9 primes) is more than 10^7
-
+      // We can now calculate phi, and hence solve the problem
       Func<long, long> phi = n => n - inversePhi[n];
-      return Sequences.Range(2, 10000000).Where(n => IsPermutation(n, phi(n))).MinBy(n => (double)n/phi(n));
-
-      // Attempt to be cunning by iterating through all coprime pairs
-      /*
-      var phi = new long[100001];
-
-      try
-      {
-        foreach (var coprimePair in Coprimes(5000))
-        {
-          phi[coprimePair.Item1]++;
-        }
-      }
-      catch
-      {
-      }
-
-      return phi[87109];
-      */
-
-      // Assume it's the highest prime such that p-1 is a pemutation of p. It's not.
-      /*
-      foreach (var prime in Sequences.Primes().TakeWhile(prime => prime < 10000000).Reverse())
-      {
-        if (IsPermutation(prime, prime - 1))
-        {
-          return prime;
-        }
-      }
-
-      return -1;
-      */
-      /*
-      // Brute force method
-      var candidates = Sequences.Range(1, 100000).Where(number => IsPermutation(number, Phi(number)));
-
-      foreach (var candidate in candidates)
-      {
-        Console.WriteLine(candidate);
-      }
-
-      return 42;
-      */
+      return Sequences.Range(3, 10000000-1, 2).MinByWithPostCondition(
+        n => (double)n/phi(n),
+        n => IsPermutation(n, phi(n)));
     }
 
     private static void AddMultiplesOfPrimes(IList<long> allPrimes, long multipleOfPrimesSoFar, long highestPrimeSoFar, bool addPrimes, long[] inversePhi)
     {
+      // We count non-coprimes by considering in turn each prime number, and all its multiples
+      // So the multiples of 2 are 2,4,6,8 etc. We can see that from this list,
+      // 2 has 1 non-coprime, 4 has 2 non-coprimes, 6 has 3 non-coprimes, etc.
+      //
+      // We repeat for all prime numbers to find all the non-coprimes of any number.
+
       if (multipleOfPrimesSoFar*highestPrimeSoFar >= inversePhi.Length) return;
 
       var maxAdditionalPrime = inversePhi.Length/multipleOfPrimesSoFar;
-
+      
       foreach (var additionalPrime in allPrimes.SkipWhile(prime => prime <= highestPrimeSoFar).TakeWhile(prime => prime < maxAdditionalPrime))
       {
         var newMultipleOfPrimes = multipleOfPrimesSoFar*additionalPrime;
@@ -93,69 +53,43 @@ namespace Euler.Problems
           multiple += newMultipleOfPrimes;
         }
 
+        // Of course, we're not actually "finding" non-coprimes, but counting them. And the
+        // method above double-counts numbers that are multiples of several primes.
+        //
+        // E.g. consider 6 = 2*3. We will mark 6 as a multiple of 2 (3 non-coprimes - 2,4,6) and 
+        // of 3 (2 non-coprimes - 3,6). 6 is marked as a non-coprime twice. So if we've just added all
+        // the multiples of 2, we now need to go through and subtract off all the multiples of 2*p for
+        // primes p>2.
+        //
+        // However this will double-count (i.e. subtract twice) any multiple that is itself a prime,
+        // e.g. consider 30 = 2*3*5. Without the line of code below we would record the following
+        // non-coprimes of 30:
+        //   2*... : 2,4,6,...,30 = 15 non-coprimes
+        //   3*... : 3,6,9,...,30 = 10 non-coprimes
+        //   5*... : 5,10,....,30 = 6 non-coprimes
+        //
+        // We realise we've counted 6,10,12,etc multiple times, so as per the second paragraph of this
+        // comment we subtract off:
+        //   2*3...: 6,12,...,30  = 5 non-coprimes
+        //   2*5...: 10,20,30     = 3 non-coprimes
+        //   3*5...: 15,30        = 2 non-coprimes
+        //
+        // But now we've subtracted off 30 three times, having only added it three times in the first place!
+        // This is because 30 is has three prime factors, not just two, so we've "found" it as many times in
+        // the subtraction as we did in the original addition. Hence we now need to go through all the 
+        // combinations of /three/ primes, adding them back on to the coprimes list again:
+        //   2*3*5...: 30 = 1 non-coprime
+        //
+        // Which leaves us with inversePhi(30)=22 => phi(30)=8, which is correct.
+        //
+        // And of course this keeps going, potentially, until we've alternated add/subtract as many
+        // times as there can be distinct prime factors of any number. Which for 10^7 happens to be 8.
+
         AddMultiplesOfPrimes(allPrimes, newMultipleOfPrimes, additionalPrime, !addPrimes, inversePhi);
       }
     }
-
-    private static long Gcd(long firstNumber, long secondNumber)
-    {
-      while (secondNumber > 0)
-      {
-        if (firstNumber > secondNumber)
-        {
-          firstNumber -= secondNumber;
-        }
-        else
-        {
-          secondNumber -= firstNumber;
-        }
-      }
-
-      return firstNumber;
-    }
-
-    private static readonly Func<long, long, long> GcdRecursiveMemo = ((Func<long, long, long>)GcdRecursive).Memoize();
-
-    private static long GcdRecursive(long firstNumber, long secondNumber)
-    {
-      if (secondNumber == 0) return firstNumber;
-      return GcdRecursiveMemo(secondNumber, firstNumber%secondNumber);
-    }
-
-    private static IEnumerable<Tuple<long, long>> Coprimes(long limit)
-    {
-      var pairs = new Queue<Tuple<long, long>>(10000000);
-      pairs.Enqueue(new Tuple<long, long>(2, 1));
-      pairs.Enqueue(new Tuple<long, long>(3, 1));
-      
-      while (true)
-      {
-        var pair = pairs.Dequeue();
-        if (pair.Item1 > limit) continue;
-
-        yield return pair;
-
-        var next1 = new Tuple<long, long>(2*pair.Item1 - pair.Item2, pair.Item1);
-        var next2 = new Tuple<long, long>(2 * pair.Item1 + pair.Item2, pair.Item1);
-        var next3 = new Tuple<long, long>(pair.Item1 + 2 * pair.Item2, pair.Item2);
-        pairs.Enqueue(next1);
-        pairs.Enqueue(next2);
-        pairs.Enqueue(next3);
-      }
-    }
-
-    private static long Phi(long number)
-    {
-      // Is there a better way of getting coprimes than just testing them all? Must be.
-      return Sequences.Range(1, number).Count(candidate => GcdRecursiveMemo(number, candidate) == 1);
-    }
-
-    private static Func<long, bool> GetCoprimeTester(long firstNumber)
-    {
-      IEnumerable<long> primeFactors = firstNumber.PrimeFactors().ToList();
-      return secondNumber => primeFactors.All(prime => secondNumber%prime != 0);
-    }
-
+    
+    // This method is rather slow
     private static bool IsPermutation(long firstNumber, long secondNumber)
     {
       if (secondNumber < firstNumber / 10) return false;
@@ -166,5 +100,19 @@ namespace Euler.Problems
       return secondNormalised.Length == firstNormalised.Count() &&
              secondNormalised.OrderBy(c => c).SequenceEqual(firstNormalised.OrderBy(c => c));
     }
+
+    // This method validates Phi, but doesn't perform well enough to run on large volumes of data
+    private static long Phi(long number)
+    {
+      return Sequences.Range(1, number).Count(candidate => GcdRecursiveMemo(number, candidate) == 1);
+    }
+
+    private static long GcdRecursive(long firstNumber, long secondNumber)
+    {
+      if (secondNumber == 0) return firstNumber;
+      return GcdRecursiveMemo(secondNumber, firstNumber%secondNumber);
+    }
+
+    private static readonly Func<long, long, long> GcdRecursiveMemo = ((Func<long, long, long>)GcdRecursive).Memoize();
   }
 }
