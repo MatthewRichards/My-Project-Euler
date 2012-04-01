@@ -6,7 +6,7 @@ namespace Euler.Utilities
 {
   public class Sequences
   {
-    private static readonly List<long> PrimesSoFar = new List<long>() { 2, 3 };
+    private static readonly SequenceStore PrimesSoFar = new SequenceStore("Primes", new long[]{ 2, 3 });
 
     public static IEnumerable<long> Range(long start, long end)
     {
@@ -34,12 +34,13 @@ namespace Euler.Utilities
 
     public static IEnumerable<long> Primes()
     {
+      long currentPrime = 3;
+
       foreach (long prime in PrimesSoFar)
       {
+        currentPrime = prime;
         yield return prime;
       }
-
-      long currentPrime = 3;
 
       while (currentPrime > 0)
       {
