@@ -21,6 +21,8 @@ namespace Euler.Utilities
       {
         yield return number;
       }
+
+      yield return end;
     }
 
     public static IEnumerable<int> TriangleNumbers()

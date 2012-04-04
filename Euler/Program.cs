@@ -8,7 +8,7 @@ namespace Euler
     static void Main(string[] args)
     {
       DateTime startTime = DateTime.Now;
-      var answer = new Problem70().GetAnswer();
+      var answer = new Problem69To72().GetAnswer();
       DateTime endTime = DateTime.Now;
 
       Console.Out.WriteLine("Solved in " + (endTime - startTime).TotalMilliseconds + "ms");
