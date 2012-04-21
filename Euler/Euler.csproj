@@ -39,6 +39,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Algorithms\CoprimeSieve.cs" />
+    <Compile Include="Problems\Problem39.cs" />
+    <Compile Include="Problems\Problem40.cs" />
     <Compile Include="Problems\Problem69To72.cs" />
     <Compile Include="Utilities\EnumerableExtensions.cs" />
     <Compile Include="Utilities\FunctionExtensions.cs" />

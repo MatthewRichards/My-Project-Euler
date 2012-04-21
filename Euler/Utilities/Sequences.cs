@@ -25,6 +25,23 @@ namespace Euler.Utilities
       yield return end;
     }
 
+    public static IEnumerable<int> Range(int start, int end)
+    {
+      return Range(start, end, 1);
+    }
+
+    public static IEnumerable<int> Range(int start, int end, int step)
+    {
+      int direction = start > end ? -step : step;
+
+      for (int number = start; number != end; number += direction)
+      {
+        yield return number;
+      }
+
+      yield return end;
+    }
+
     public static IEnumerable<int> TriangleNumbers()
     {
       int sum = 0;
